@@ -1,0 +1,53 @@
+services:
+  web:
+    build:
+      context: ./frontend_stranger
+      dockerfile: Dockerfile
+    container_name: stranger_web
+    environment:
+      API_BACKEND_URL: http://host.docker.internal:8080/api
+    ports:
+      - "8084:80"
+    volumes:
+      - ./frontend_stranger:/var/www/html
+    depends_on:
+      - db
+  web1:
+    build:
+      context: ./frontend_dragon
+      dockerfile: Dockerfile
+    container_name: dragon_web
+    environment:
+      API_BACKEND_URL: http://host.docker.internal:8080/api
+    ports:
+      - "8087:80"
+    volumes:
+      - ./frontend_dragon:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: series
+    restart: always
+    volumes :
+      - ./sql/local:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - "8085:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    depends_on:
+      - db
+volumes:
+  db_data:

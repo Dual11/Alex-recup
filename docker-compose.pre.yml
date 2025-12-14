@@ -1,0 +1,34 @@
+services:
+  web:
+    build:
+      context: ./frontend_stranger
+      dockerfile: Dockerfile
+    container_name: mariadb_stranger
+    environment:
+      API_BACKEND_URL: http://api:8080/api
+    ports:
+      - "8088:80"
+    volumes:
+      - ./frontend_stranger:/var/www/html
+  web1:
+    build:
+      context: ./frontend_dragon
+      dockerfile: Dockerfile
+    container_name: dragon_web
+    environment:
+      API_BACKEND_URL: http://api:8080/api
+    ports:
+      - "8087:80"
+    volumes:
+      - ./frontend_dragon:/var/www/html
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: maria_api
+    environment:
+      SPRING_PROFILES_ACTIVE: pre
+    ports:
+      - "8089:80"
+
